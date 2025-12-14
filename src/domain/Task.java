@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class Task {
 
@@ -10,11 +11,38 @@ public class Task {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Task(Long id, String description) {
+    private Task(
+            Long id,
+            String description,
+            Status status,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
         this.id = id;
         this.description = description;
-        this.status = Status.TODO;
-        this.createdAt = LocalDateTime.now();
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static Task create(Long id, String description) {
+        return new Task(
+                id,
+                description,
+                Status.TODO,
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+                null
+        );
+    }
+
+    public static Task restore(
+            Long id,
+            String description,
+            Status status,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        return new Task(id, description, status, createdAt, updatedAt);
     }
 
     public Long getId() {
@@ -47,5 +75,16 @@ public class Task {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
