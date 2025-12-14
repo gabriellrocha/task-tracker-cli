@@ -24,4 +24,10 @@ public class TaskManager {
     public List<Task> list() {
         return jsonTaskStore.findAll();
     }
+
+    public List<Task> list(Status status) {
+        return list().stream()
+                .filter(task -> task.getStatus().equals(status))
+                .toList();
+    }
 }

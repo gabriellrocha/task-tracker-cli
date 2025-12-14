@@ -1,9 +1,10 @@
 package cli;
 
+import domain.Status;
 import domain.Task;
 import domain.TaskManager;
-import infrastructure.JsonTaskStore;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class CliRunner {
@@ -28,6 +29,9 @@ public class CliRunner {
         switch (command) {
             case "add" -> createTaskFlow();
             case "list" -> listTasksFlow();
+            case "list todo" -> listTasksByStatusFlow(Status.TODO);
+            case "list in-progress" -> listTasksByStatusFlow(Status.IN_PROGRESS);
+            case "list done" -> listTasksByStatusFlow(Status.DONE);
             case "help" -> printHelp();
             case "exit" -> stop();
             default -> System.out.println("Invalid command. Type 'help' to see available commands.");
@@ -47,17 +51,35 @@ public class CliRunner {
     }
 
     private void listTasksFlow() {
-        taskManager.list()
-                .forEach(System.out::println);
+        List<Task> list = taskManager.list();
+        if (list.isEmpty()) {
+            System.out.println("No tasks found");
+            return;
+        }
+
+        list.forEach(System.out::println);
+    }
+
+    private void listTasksByStatusFlow(Status status) {
+        List<Task> list = taskManager.list(status);
+        if (list.isEmpty()) {
+            System.out.println("No tasks found");
+            return;
+        }
+
+        list.forEach(System.out::println);
     }
 
     private void printHelp() {
         System.out.println("""
                 Available commands:
-                  add   - Create a new task
-                  list  - List all tasks
-                  exit  - Exit the application
-                  help  - Show this help message
+                  add               - Create a new task
+                  list              - List all tasks
+                  list todo         - List tasks with status TODO
+                  list in-progress  - List tasks with status IN_PROGRESS
+                  list done         - List tasks with status DONE
+                  exit              - Exit the application
+                  help              - Show this help message
                 """);
     }
 }
