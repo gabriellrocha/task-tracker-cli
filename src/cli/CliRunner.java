@@ -28,8 +28,9 @@ public class CliRunner {
         switch (command) {
             case "add" -> createTaskFlow();
             case "list" -> listTasksFlow();
+            case "help" -> printHelp();
             case "exit" -> stop();
-            default -> System.out.println("Invalid command");
+            default -> System.out.println("Invalid command. Type 'help' to see available commands.");
         }
     }
 
@@ -48,5 +49,15 @@ public class CliRunner {
     private void listTasksFlow() {
         taskManager.list()
                 .forEach(System.out::println);
+    }
+
+    private void printHelp() {
+        System.out.println("""
+                Available commands:
+                  add   - Create a new task
+                  list  - List all tasks
+                  exit  - Exit the application
+                  help  - Show this help message
+                """);
     }
 }
