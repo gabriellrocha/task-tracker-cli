@@ -1,3 +1,7 @@
+package domain;
+
+import infrastructure.IdGenerator;
+
 public class TaskManager {
 
     private final IdGenerator idGenerator;
