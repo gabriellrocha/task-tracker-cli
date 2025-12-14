@@ -32,6 +32,7 @@ public class CliRunner {
             case "list todo" -> listTasksByStatusFlow(Status.TODO);
             case "list in-progress" -> listTasksByStatusFlow(Status.IN_PROGRESS);
             case "list done" -> listTasksByStatusFlow(Status.DONE);
+            case "delete" -> deleteTaskFlow();
             case "help" -> printHelp();
             case "exit" -> stop();
             default -> System.out.println("Invalid command. Type 'help' to see available commands.");
@@ -47,7 +48,7 @@ public class CliRunner {
         System.out.print("Description: ");
         String description = keyboard.nextLine();
         Task task = taskManager.create(description);
-        System.out.printf("Task added successfully (ID: %d)\n", task.getId());
+        System.out.printf("Task created (ID: %d)\n", task.getId());
     }
 
     private void listTasksFlow() {
@@ -70,6 +71,18 @@ public class CliRunner {
         list.forEach(System.out::println);
     }
 
+    private void deleteTaskFlow() {
+        System.out.print("ID: ");
+        try {
+            Long id = Long.parseLong(keyboard.nextLine());
+            boolean deleted = taskManager.delete(id);
+            String message = deleted ? String.format("Task deleted (ID: %d)", id) : "No tasks found";
+            System.out.println(message);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID");
+        }
+    }
+
     private void printHelp() {
         System.out.println("""
                 Available commands:
@@ -78,6 +91,7 @@ public class CliRunner {
                   list todo         - List tasks with status TODO
                   list in-progress  - List tasks with status IN_PROGRESS
                   list done         - List tasks with status DONE
+                  delete            - Delete a task
                   exit              - Exit the application
                   help              - Show this help message
                 """);

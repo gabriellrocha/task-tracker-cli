@@ -30,4 +30,8 @@ public class TaskManager {
                 .filter(task -> task.getStatus().equals(status))
                 .toList();
     }
+
+    public boolean delete(Long id) {
+        return jsonTaskStore.deleteById(id);
+    }
 }

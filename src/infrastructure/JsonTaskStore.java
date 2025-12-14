@@ -44,4 +44,39 @@ public class JsonTaskStore {
             throw new RuntimeException(e);
         }
     }
+
+
+    public boolean deleteById(Long id) {
+        List<Task> tasks = findAll();
+
+        int previousSize = tasks.size();
+
+        List<Task> remaining = tasks.stream()
+                .filter(task -> !task.getId().equals(id))
+                .toList();
+
+        if (previousSize == remaining.size()) {
+            return false;
+        }
+
+        writeAll(remaining);
+        return true;
+    }
+
+    private void writeAll(List<Task> tasks) {
+
+        try {
+            Files.write(
+                    path,
+                    tasks.stream()
+                            .map(TaskSerializer::toJson)
+                            .map(json -> json + System.lineSeparator())
+                            .toList(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
