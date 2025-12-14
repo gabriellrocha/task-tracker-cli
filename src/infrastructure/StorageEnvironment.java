@@ -15,7 +15,7 @@ public final class StorageEnvironment {
     }
 
     public Path taskFile() {
-        return baseDir.resolve("tasks.json");
+        return baseDir.resolve("tasks.jsonl");
     }
 
     private Path initBaseDir() {
