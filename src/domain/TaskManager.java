@@ -4,6 +4,7 @@ import infrastructure.IdGenerator;
 import infrastructure.JsonTaskStore;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TaskManager {
 
@@ -33,5 +34,9 @@ public class TaskManager {
 
     public boolean delete(Long id) {
         return jsonTaskStore.deleteById(id);
+    }
+
+    public Optional<Task> changeStatus(Long id, Status status) {
+        return jsonTaskStore.changeStatus(id, status);
     }
 }

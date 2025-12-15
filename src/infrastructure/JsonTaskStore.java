@@ -1,5 +1,6 @@
 package infrastructure;
 
+import domain.Status;
 import domain.Task;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Optional;
 
 public class JsonTaskStore {
 
@@ -61,6 +63,24 @@ public class JsonTaskStore {
 
         writeAll(remaining);
         return true;
+    }
+
+    public Optional<Task> changeStatus(Long id, Status status) {
+
+        List<Task> tasks = findAll();
+
+        Optional<Task> updated = tasks.stream()
+                .filter(task -> task.getId().equals(id))
+                .findFirst()
+                .map(task -> {
+                    task.setStatus(status);
+                    return task;
+                });
+
+        if (updated.isPresent()) {
+            writeAll(tasks);
+        }
+        return updated;
     }
 
     private void writeAll(List<Task> tasks) {

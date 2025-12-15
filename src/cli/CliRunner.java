@@ -5,6 +5,7 @@ import domain.Task;
 import domain.TaskManager;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CliRunner {
@@ -33,6 +34,8 @@ public class CliRunner {
             case "list in-progress" -> listTasksByStatusFlow(Status.IN_PROGRESS);
             case "list done" -> listTasksByStatusFlow(Status.DONE);
             case "delete" -> deleteTaskFlow();
+            case "mark-in-progress" -> changeStatusFlow(Status.IN_PROGRESS);
+            case "mark-done" -> changeStatusFlow(Status.DONE);
             case "help" -> printHelp();
             case "exit" -> stop();
             default -> System.out.println("Invalid command. Type 'help' to see available commands.");
@@ -83,6 +86,34 @@ public class CliRunner {
         }
     }
 
+    private void changeStatusFlow(Status status) {
+        Optional<Long> longOptional = readId();
+
+        if (longOptional.isEmpty()) {
+            return;
+        }
+        Optional<Task> optionalTask = taskManager.changeStatus(longOptional.get(), status);
+
+        String message = optionalTask.isPresent() ? "task updated" : "task not found";
+        System.out.println(message);
+    }
+
+    private Optional<Long> readId() {
+        while (true) {
+            System.out.print("Enter ID: ");
+            String input = keyboard.nextLine().toLowerCase();
+            if (input.equals("cancel")) {
+                return Optional.empty();
+            }
+            try {
+                return Optional.of(Long.parseLong(input));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ID (or type 'cancel'): ");
+            }
+        }
+    }
+
+
     private void printHelp() {
         System.out.println("""
                 Available commands:
@@ -91,6 +122,8 @@ public class CliRunner {
                   list todo         - List tasks with status TODO
                   list in-progress  - List tasks with status IN_PROGRESS
                   list done         - List tasks with status DONE
+                  mark-in-progress  - Mark a task as IN_PROGRESS
+                  mark-done         - Mark a task as DONE
                   delete            - Delete a task
                   exit              - Exit the application
                   help              - Show this help message
