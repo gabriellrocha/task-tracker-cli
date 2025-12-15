@@ -29,29 +29,49 @@ public class CliRunner {
     private void handleCommand(String command) {
         switch (command) {
             case "add" -> createTaskFlow();
+            case "update" -> updateTaskFlow();
+            case "delete" -> deleteTaskFlow();
             case "list" -> listTasksFlow();
             case "list todo" -> listTasksFlow(Status.TODO);
             case "list in-progress" -> listTasksFlow(Status.IN_PROGRESS);
             case "list done" -> listTasksFlow(Status.DONE);
-            case "delete" -> deleteTaskFlow();
             case "mark-in-progress" -> changeStatusFlow(Status.IN_PROGRESS);
             case "mark-done" -> changeStatusFlow(Status.DONE);
-            case "update" -> updateTaskFlow();
             case "help" -> printHelp();
             case "exit" -> stop();
             default -> System.out.println("Invalid command. Type 'help' to see available commands.");
         }
     }
 
-    private void stop() {
-        running = false;
-        System.out.println("Thanks for using TaskTracker. <3 Developer");
-    }
-
     private void createTaskFlow() {
         String description = readDescription();
         Task task = taskManager.create(description);
         System.out.printf("Task created (ID: %d)\n", task.getId());
+    }
+
+    private void updateTaskFlow() {
+        Optional<Long> longOptional = readId();
+
+        if (longOptional.isEmpty()) {
+            return;
+        }
+
+        String description = readDescription();
+        Optional<Task> optionalTask = taskManager.update(longOptional.get(), description);
+        String message = optionalTask.isPresent() ? "task updated" : "task not found";
+        System.out.println(message);
+    }
+
+    private void deleteTaskFlow() {
+        Optional<Long> longOptional = readId();
+
+        if (longOptional.isEmpty()) {
+            return;
+        }
+        boolean deleted = taskManager.delete(longOptional.get());
+
+        String message = deleted ? String.format("task deleted (ID: %d)", longOptional.get()) : "task not found";
+        System.out.println(message);
     }
 
     private void listTasksFlow() {
@@ -72,18 +92,6 @@ public class CliRunner {
         tasks.forEach(System.out::println);
     }
 
-    private void deleteTaskFlow() {
-        Optional<Long> longOptional = readId();
-
-        if (longOptional.isEmpty()) {
-            return;
-        }
-        boolean deleted = taskManager.delete(longOptional.get());
-
-        String message = deleted ? String.format("task deleted (ID: %d)", longOptional.get()) : "task not found";
-        System.out.println(message);
-    }
-
     private void changeStatusFlow(Status status) {
         Optional<Long> longOptional = readId();
 
@@ -92,19 +100,6 @@ public class CliRunner {
         }
         Optional<Task> optionalTask = taskManager.changeStatus(longOptional.get(), status);
 
-        String message = optionalTask.isPresent() ? "task updated" : "task not found";
-        System.out.println(message);
-    }
-
-    private void updateTaskFlow() {
-        Optional<Long> longOptional = readId();
-
-        if (longOptional.isEmpty()) {
-            return;
-        }
-
-        String description = readDescription();
-        Optional<Task> optionalTask = taskManager.update(longOptional.get(), description);
         String message = optionalTask.isPresent() ? "task updated" : "task not found";
         System.out.println(message);
     }
@@ -144,5 +139,10 @@ public class CliRunner {
                   exit              - Exit the application
                   help              - Show this help message
                 """);
+    }
+
+    private void stop() {
+        running = false;
+        System.out.println("Thanks for using TaskTracker. <3 Developer");
     }
 }
