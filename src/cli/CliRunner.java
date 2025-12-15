@@ -30,9 +30,9 @@ public class CliRunner {
         switch (command) {
             case "add" -> createTaskFlow();
             case "list" -> listTasksFlow();
-            case "list todo" -> listTasksByStatusFlow(Status.TODO);
-            case "list in-progress" -> listTasksByStatusFlow(Status.IN_PROGRESS);
-            case "list done" -> listTasksByStatusFlow(Status.DONE);
+            case "list todo" -> listTasksFlow(Status.TODO);
+            case "list in-progress" -> listTasksFlow(Status.IN_PROGRESS);
+            case "list done" -> listTasksFlow(Status.DONE);
             case "delete" -> deleteTaskFlow();
             case "mark-in-progress" -> changeStatusFlow(Status.IN_PROGRESS);
             case "mark-done" -> changeStatusFlow(Status.DONE);
@@ -56,22 +56,20 @@ public class CliRunner {
 
     private void listTasksFlow() {
         List<Task> list = taskManager.list();
-        if (list.isEmpty()) {
-            System.out.println("No tasks found");
-            return;
-        }
-
-        list.forEach(System.out::println);
+        showTask(list);
     }
 
-    private void listTasksByStatusFlow(Status status) {
+    private void listTasksFlow(Status status) {
         List<Task> list = taskManager.list(status);
-        if (list.isEmpty()) {
-            System.out.println("No tasks found");
+        showTask(list);
+    }
+
+    private void showTask(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("no task found");
             return;
         }
-
-        list.forEach(System.out::println);
+        tasks.forEach(System.out::println);
     }
 
     private void deleteTaskFlow() {
@@ -112,7 +110,6 @@ public class CliRunner {
             }
         }
     }
-
 
     private void printHelp() {
         System.out.println("""
