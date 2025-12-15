@@ -36,6 +36,7 @@ public class CliRunner {
             case "delete" -> deleteTaskFlow();
             case "mark-in-progress" -> changeStatusFlow(Status.IN_PROGRESS);
             case "mark-done" -> changeStatusFlow(Status.DONE);
+            case "update" -> updateTaskFlow();
             case "help" -> printHelp();
             case "exit" -> stop();
             default -> System.out.println("Invalid command. Type 'help' to see available commands.");
@@ -95,6 +96,19 @@ public class CliRunner {
         System.out.println(message);
     }
 
+    private void updateTaskFlow() {
+        Optional<Long> longOptional = readId();
+
+        if (longOptional.isEmpty()) {
+            return;
+        }
+
+        String description = readDescription();
+        Optional<Task> optionalTask = taskManager.update(longOptional.get(), description);
+        String message = optionalTask.isPresent() ? "task updated" : "task not found";
+        System.out.println(message);
+    }
+
     private String readDescription() {
         System.out.print("Description: ");
         return keyboard.nextLine();
@@ -126,6 +140,7 @@ public class CliRunner {
                   mark-in-progress  - Mark a task as IN_PROGRESS
                   mark-done         - Mark a task as DONE
                   delete            - Delete a task
+                  update            - Update a task
                   exit              - Exit the application
                   help              - Show this help message
                 """);

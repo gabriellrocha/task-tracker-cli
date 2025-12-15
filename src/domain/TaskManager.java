@@ -37,6 +37,10 @@ public class TaskManager {
     }
 
     public Optional<Task> changeStatus(Long id, Status status) {
-        return jsonTaskStore.changeStatus(id, status);
+        return jsonTaskStore.update(id, status);
+    }
+
+    public Optional<Task> update(Long id, String description) {
+        return jsonTaskStore.update(id, description);
     }
 }

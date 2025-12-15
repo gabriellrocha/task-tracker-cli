@@ -67,7 +67,7 @@ public class JsonTaskStore {
         return true;
     }
 
-    public Optional<Task> changeStatus(Long id, Status status) {
+    public Optional<Task> update(Long id, Status status) {
 
         List<Task> tasks = findAll();
 
@@ -101,5 +101,22 @@ public class JsonTaskStore {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Optional<Task> update(Long id, String description) {
+
+        List<Task> tasks = findAll();
+
+        Optional<Task> updated = tasks.stream().filter(task -> task.getId().equals(id))
+                .findFirst()
+                .map(task -> {
+                    task.setDescription(description);
+                    return task;
+                });
+
+        if (updated.isPresent()) {
+            writeAll(tasks);
+        }
+        return updated;
     }
 }
