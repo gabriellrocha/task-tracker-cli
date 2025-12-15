@@ -75,15 +75,15 @@ public class CliRunner {
     }
 
     private void deleteTaskFlow() {
-        System.out.print("ID: ");
-        try {
-            Long id = Long.parseLong(keyboard.nextLine());
-            boolean deleted = taskManager.delete(id);
-            String message = deleted ? String.format("Task deleted (ID: %d)", id) : "No tasks found";
-            System.out.println(message);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid ID");
+        Optional<Long> longOptional = readId();
+
+        if (longOptional.isEmpty()) {
+            return;
         }
+        boolean deleted = taskManager.delete(longOptional.get());
+
+        String message = deleted ? String.format("task deleted (ID: %d)", longOptional.get()) : "task not found";
+        System.out.println(message);
     }
 
     private void changeStatusFlow(Status status) {
