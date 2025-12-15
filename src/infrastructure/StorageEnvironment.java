@@ -10,11 +10,7 @@ public final class StorageEnvironment {
         this.baseDir = initBaseDir();
     }
 
-    public Path idStateFile() {
-        return baseDir.resolve("id.state");
-    }
-
-    public Path taskFile() {
+    public Path getTasksFilePath() {
         return baseDir.resolve("tasks.jsonl");
     }
 

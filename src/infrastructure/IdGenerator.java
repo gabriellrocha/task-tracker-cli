@@ -1,16 +1,17 @@
 package infrastructure;
 
+import domain.Task;
+
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class IdGenerator {
 
-    private final Path path;
+    private final StorageEnvironment storageEnvironment;
     private Long lastId;
 
-    public IdGenerator(Path path) {
-        this.path = path;
+    public IdGenerator(StorageEnvironment storageEnvironment) {
+        this.storageEnvironment = storageEnvironment;
         this.lastId = load();
     }
 
@@ -20,22 +21,30 @@ public class IdGenerator {
         return lastId;
     }
 
-
     private Long load() {
-        if (!Files.exists(path)) {
-            return 0L;
+        if (Files.exists(storageEnvironment.getTasksFilePath())) {
+            return readLastTaskId();
         }
+        return 0L;
+    }
+
+    private Long readLastTaskId() {
         try {
-            return Long.parseLong(Files.readString(path).trim());
+            return Files.readAllLines(storageEnvironment.getTasksFilePath())
+                    .stream()
+                    .filter(line -> !line.isBlank())
+                    .map(TaskSerializer::fromJson)
+                    .map(Task::getId)
+                    .max(Long::compareTo)
+                    .orElse(0L);
         } catch (IOException e) {
-            // TODO: My Exception
             throw new RuntimeException(e);
         }
     }
 
     private void persist(Long value) {
         try {
-            Files.writeString(path, Long.toString(value));
+            Files.writeString(storageEnvironment.getTasksFilePath(), Long.toString(value));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
