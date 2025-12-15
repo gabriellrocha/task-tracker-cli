@@ -48,8 +48,7 @@ public class CliRunner {
     }
 
     private void createTaskFlow() {
-        System.out.print("Description: ");
-        String description = keyboard.nextLine();
+        String description = readDescription();
         Task task = taskManager.create(description);
         System.out.printf("Task created (ID: %d)\n", task.getId());
     }
@@ -94,6 +93,11 @@ public class CliRunner {
 
         String message = optionalTask.isPresent() ? "task updated" : "task not found";
         System.out.println(message);
+    }
+
+    private String readDescription() {
+        System.out.print("Description: ");
+        return keyboard.nextLine();
     }
 
     private Optional<Long> readId() {
